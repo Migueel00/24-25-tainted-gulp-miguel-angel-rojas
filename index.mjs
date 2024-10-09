@@ -2,6 +2,7 @@ import { getData } from "./service.mjs";
 import Ingredients from "./ingredients.mjs";
 import Cauldron from "./cauldron.mjs";
 import PotionBag from "./PotionBag.mjs";
+import Character from "./Character.mjs";
 
 const showIngredients = async (ingredients) => {
 
@@ -36,9 +37,11 @@ const execute = async () => {
         const names         = ingredientsNames(ingredients);
 
         const potionBag     = PotionBag.create(names, cauldron);
-        showPotions(potionBag.potions);
+        // showPotions(potionBag.potions);
 
-        
+        const playerData    = await getPlayerData();
+        const character     = Character.from(playerData, potionBag.potions);
+        showCharacter(character);
     }
     catch (error) {
         // Error
@@ -82,4 +85,24 @@ function ingredientsNames(ingredients){
     }
 
     return names;
+}
+
+async function getPlayerData() {
+    const data = await fetch('https://gist.githubusercontent.com/oscar1771/3f27e083e980d9d8357294c2d7387fc0/raw/0296abf13d206454d18f88d8283c114be8d96d2e/joseph.json');
+    
+    return data.json();
+}
+
+function showCharacter(character){
+    console.log(`${character.name}`);
+    console.log('----------------------------------');
+    console.log(`Health: ${character.health}`);
+    console.log(`Magick: ${character.magick}`);
+    console.log(`Stamina: ${character.stamina}`);
+
+    for(let i = 0; i < character.potions.length; i++){
+        const potion = character.potions[i];
+
+        console.log(`Potion ${i}: ${potion.name}`);
+    }
 }
