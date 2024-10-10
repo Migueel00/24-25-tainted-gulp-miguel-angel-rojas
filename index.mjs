@@ -4,44 +4,26 @@ import Cauldron from "./cauldron.mjs";
 import PotionBag from "./PotionBag.mjs";
 import Character from "./Character.mjs";
 
-const showIngredients = async (ingredients) => {
-
-    for(let i = 0; i < ingredients.ingredients.length; i++){
-
-        const ingredient = ingredients.ingredients[i]
-        
-
-        console.log("Ingredient name: " + ingredient.name + " effects: ");
-        console.log("------------------------")
-
-        for(let k = 0; k < ingredient.effects.length; k++){
-
-            const effect = ingredient.effects[k];
-
-            console.log(effect.name);
-        }
-
-        console.log("------------------------")
-    }
-
-} 
 
 const execute = async () => {
 
     try {
         const data          = await getData();
+        const playerData    = await getPlayerData();
+
 
         const ingredients   = Ingredients.load(data);
 
         const cauldron      = new Cauldron(ingredients);
-        const names         = ingredientsNames(ingredients);
+        const pouch        = playerData.players[0].pouch_aged;
 
-        const potionBag     = PotionBag.create(names, cauldron);
-        // showPotions(potionBag.potions);
+        const potionBag     = PotionBag.create(pouch, cauldron);
+        showPotions(potionBag.potions);
 
-        const playerData    = await getPlayerData();
         const character     = Character.from(playerData, potionBag.potions);
+
         showCharacter(character);
+        character.drinkEmAll();
     }
     catch (error) {
         // Error
@@ -70,23 +52,6 @@ function showPotions(potions){
     }
 }
 
-function ingredientsNames(ingredients){
-    const ingredientsArray   = ingredients.ingredients;
-
-
-    const names         = [];
-
-    for(let i = 0; i < ingredientsArray.length; i++){
-
-        const ingredient    = ingredientsArray[i];
-        const name          = ingredient.name;
-        
-        names.push(name);
-    }
-
-    return names;
-}
-
 async function getPlayerData() {
     const data = await fetch('https://gist.githubusercontent.com/oscar1771/3f27e083e980d9d8357294c2d7387fc0/raw/0296abf13d206454d18f88d8283c114be8d96d2e/joseph.json');
     
@@ -94,7 +59,7 @@ async function getPlayerData() {
 }
 
 function showCharacter(character){
-    console.log(`${character.name}`);
+    console.log(`${character.fullName}`);
     console.log('----------------------------------');
     console.log(`Health: ${character.health}`);
     console.log(`Magick: ${character.magick}`);

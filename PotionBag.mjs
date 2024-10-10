@@ -18,7 +18,7 @@ export default class PotionBag{
                 const name2 = ingredients[k];
 
                 const potion = cauldron.createPotion(name1, name2);
-                
+
                 potions.push(potion);
             }
         }
